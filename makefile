@@ -1,53 +1,50 @@
 # Nome da imagem Docker
-IMAGE_NAME = plantseg_image
+IMAGE_NAME =plantseg_image
 
-# Caminho para os dados de treinamento
-DATASET_PATH = /caminho/para/seu/dataset
-
-# Caminho para salvar os resultados
-OUTPUT_PATH = /caminho/para/salvar/resultados
-
-# Caminho para os logs e checkpoints no host
-LOG_DIR = /caminho/para/salvar/logs
+# Caminhos para salvar os resultados e logs
+OUTPUT_PATH = $(CURDIR)/AMNS/output
+LOG_DIR = $(CURDIR)/AMNS/logs
 CHECKPOINT_DIR = $(LOG_DIR)/checkpoints
 
-# Caminho para o arquivo de configuração do modelo
+# Arquivo de configuração do modelo e checkpoint
 CONFIG_FILE = configs/segnext/segnext_mscan-t_1xb16-adamw-40k_plantseg115-512x512.py
-
-# Caminho para o checkpoint mais recente do modelo treinado
 CHECKPOINT_FILE = $(CHECKPOINT_DIR)/latest.pth
-
 # Constrói a imagem Docker
 build:
-	docker build -t $(IMAGE_NAME) .
+	docker build --build-arg DATASET_PATH=$(DATASET_PATH) -t $(IMAGE_NAME) .
 
 # Inicia um contêiner Docker interativo
 run:
 	docker run -it --rm \
-		-v $(DATASET_PATH):/app/data \
 		-v $(OUTPUT_PATH):/app/output \
 		-v $(LOG_DIR):/app/logs \
 		$(IMAGE_NAME) \
-		bash -c "conda run -n plantseg_env bash"
+		bash -c "source activate plantseg_env && exec bash"
 
 # Executa o treinamento com o modelo configurado
 train:
 	docker run -it --rm \
-		-v $(DATASET_PATH):/app/data \
-		-v $(OUTPUT_PATH):/app/output \
-		-v $(LOG_DIR):/app/logs \
+		--gpus all \
+		-v $(CURDIR)/plantseg/plantseg:/app/data/plantseg115 \
+		-v $(CURDIR)/AMNS/output:/app/output \
+		-v $(CURDIR)/AMNS/logs:/app/logs \
+		-v $(CURDIR)/AMNS/checkpoints:/app/work_dirs \
 		$(IMAGE_NAME) \
-		bash -c "conda run -n plantseg_env python tools/train.py $(CONFIG_FILE)"
+		bash -c "source activate plantseg_env && CUDA_VISIBLE_DEVICES=0 python tools/train.py $(CONFIG_FILE)"
 
-# Avalia o modelo treinado e gera métricas
+# Avalia o modelo treinado
 evaluate:
 	docker run -it --rm \
-		-v $(DATASET_PATH):/app/data \
-		-v $(OUTPUT_PATH):/app/output \
-		-v $(LOG_DIR):/app/logs \
+		--gpus all \
+		-v $(CURDIR)/plantseg/plantseg:/app/data/plantseg115 \
+		-v $(CURDIR)/AMNS/output:/app/output \
+		-v $(CURDIR)/AMNS/logs:/app/logs \
 		$(IMAGE_NAME) \
-		bash -c "conda run -n plantseg_env python tools/test.py $(CONFIG_FILE) $(CHECKPOINT_FILE) --eval mIoU"
-
+		bash -c "source activate plantseg_env && CUDA_VISIBLE_DEVICES=0 python evaluation/evaluation_segmentation.py --config /app/eval_config.yaml"
 # Limpa o contêiner criado
 clean:
-	docker rm -f $(shell docker ps -aqf "ancestor=$(IMAGE_NAME)")
+	@echo "Limpando contêiner Docker..."
+	-docker stop $(CONTAINER_NAME) || true
+	-docker rm $(CONTAINER_NAME) || true
+	@echo "Removendo a imagem Docker..."
+	-docker rmi $(IMAGE_NAME) || true

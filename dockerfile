@@ -1,46 +1,56 @@
-# Use uma imagem base oficial do Python 3.11
-FROM python:3.11-slim
+# Use uma imagem base oficial do Python 3.11 com Miniconda
+FROM continuumio/miniconda3:latest
 
-# Instale dependências do sistema
+# Atualize pacotes do sistema e instale ferramentas necessárias
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
     git \
+    wget \
     && rm -rf /var/lib/apt/lists/*
 
-# Instale o Miniconda
-RUN apt-get update && \
-    apt-get install -y wget && \
-    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh && \
-    bash /tmp/miniconda.sh -b -p /opt/conda && \
-    rm /tmp/miniconda.sh && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# Crie e ative um ambiente Conda específico para o projeto
+RUN conda create --name plantseg_env python=3.11 -y && \
+    echo "source activate plantseg_env" >> ~/.bashrc
 
-# Adicione o conda ao PATH
-ENV PATH=/opt/conda/bin:$PATH
+# Instale PyTorch, torchvision e torchaudio compatíveis com CUDA 11.3
+RUN conda run -n plantseg_env conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch -y
 
-# Crie e ative o ambiente conda
-RUN conda create --name openmmlab python=3.11 -y && \
-    echo "conda activate openmmlab" >> ~/.bashrc
+# Instale o OpenMIM e o MMCV na versão necessária
+RUN conda run -n plantseg_env pip install -U openmim && \
+    conda run -n plantseg_env mim install mmengine && \
+    conda run -n plantseg_env mim install "mmcv==2.1.0"
 
-# Instale o PyTorch e torchvision
-RUN conda install -n openmmlab pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch -y
-
-# Instale o MMCV e MMEngine usando MIM
-RUN conda install -n openmmlab -c conda-forge openmim && \
-    mim install -n openmmlab mmengine && \
-    mim install -n openmmlab "mmcv>=2.0.0"
-
-# Clone o repositório do PlantSeg
+# Defina o diretório de trabalho
 WORKDIR /app
-RUN git clone https://github.com/tqwei05/PlantSeg.git ./
 
-# Instale as dependências do PlantSeg
-RUN conda run -n openmmlab pip install -r requirements.txt
+# Clone o repositório PlantSeg
+RUN git clone https://github.com/tqwei05/PlantSeg.git .
 
-# Instale o PlantSeg
-RUN conda run -n openmmlab python setup.py install
+# Declare o argumento para o caminho do dataset
+ARG DATASET_PATH
+
+# Copie o dataset do caminho configurável para o contêiner
+COPY ${DATASET_PATH} /plantseg
+
+# Ajuste a estrutura do dataset e renomeie para plantseg115
+RUN if [ -d "/plantseg/plantseg" ]; then \
+        mv /plantseg/plantseg/* /plantseg/ && \
+        rmdir /plantseg/plantseg; \
+    fi && \
+    mv /plantseg /app/data/plantseg115
+
+# Configure o PYTHONPATH para incluir o diretório do projeto
+ENV PYTHONPATH="/app:${PYTHONPATH}"
+
+# Copie o arquivo requirements.txt
+COPY requirements.txt .
+
+# Instale as dependências do projeto
+RUN conda run -n plantseg_env pip install -r requirements.txt
+
+# Configure o shell para o uso do Conda
+SHELL ["/bin/bash", "-c"]
 
 # Defina o comando padrão ao iniciar o contêiner
 CMD ["bash"]
