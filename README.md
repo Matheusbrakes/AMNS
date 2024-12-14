@@ -24,12 +24,12 @@ cd AMNS
 
 Preencha os seguintes campos no `Makefile` antes de rodar os comandos:
 
-1. **`DATASET_PATH`:** 
-   - O caminho para o diretório onde está localizado o dataset para treinamento.
+1. **`OUTPUT_PATH`:** 
+   - Diretório para salvar os resultados do treinamento.
    - Exemplo: `/home/user/data/`.
 
-2. **`OUTPUT_PATH`:** 
-   - O diretório onde os resultados e métricas serão salvos.
+2. **`CHECKPOINT_DIR`:** 
+   - O diretório onde os checkpoints do modelo serão salvos.
    - Exemplo: `/home/user/output/`.
 
 3. **`LOG_DIR`:**
@@ -40,6 +40,46 @@ Preencha os seguintes campos no `Makefile` antes de rodar os comandos:
    - O caminho do arquivo de configuração do modelo que você deseja usar para treinar.
    - Exemplo: `configs/segnext/segnext_mscan-t_1xb16-adamw-40k_plantseg115-512x512.py`.
 ---
+
+### Configuração do Dataset Local
+
+Por padrão, o dataset é copiado para o contêiner a partir do caminho local `plantsegv2/plantsegv2`. O processo é configurado no **Dockerfile**:
+
+```dockerfile
+# Copie o dataset local para o contêiner
+COPY plantsegv2 /app/data/temp_plantseg/
+
+# Ajuste a estrutura do dataset e renomeie para `plantseg115`
+RUN if [ -d "/app/data/temp_plantseg/plantsegv2" ]; then \
+        mkdir -p /app/data/plantsegv2 && \
+        mv /app/data/temp_plantseg/plantsegv2/* /app/data/plantsegv2/ && \
+        rmdir /app/data/temp_plantseg/plantsegv2; \
+    fi && \
+    mv /app/data/plantsegv2 /app/data/plantseg115
+```
+
+##### Como trocar o caminho do dataset
+Se você deseja treinar com um dataset localizado em outro caminho, por exemplo, `datasets/my_dataset`, será necessário realizar as seguintes alterações:
+
+1. **Ajuste no Dockerfile**  
+   Altere a linha `COPY` para refletir o novo caminho do dataset.  
+   Exemplo:
+   ```dockerfile
+   COPY datasets/my_dataset /app/data/temp_plantseg/
+   ```
+
+2. **Ajuste no Makefile**  
+   O comando docker run também precisa ser atualizado para mapear corretamente o novo caminho local para o contêiner. Localize a opção -v no alvo train e ajuste o caminho.
+   Exemplo, no caso do dataset estar em /home/user/datasets/experiment1:
+   ```dockerfile
+   -v /home/user/datasets/experiment1:/app/data/plantseg115 \
+   ```
+
+3. **Recompile a Imagem Docker*  
+   Após ajustar o Dockerfile, reconstrua a imagem para refletir as alterações:
+   ```bash
+   make build
+   ```
 
 ## Como Usar
 
@@ -60,8 +100,8 @@ make train
 ```
 
 Certifique-se de:
-- O dataset estar no caminho correto definido por `DATASET_PATH`.
-- O arquivo de configuração do modelo (`CONFIG_FILE`) estar correto.
+- O dataset foi copiado corretamente para o contêiner.
+- O arquivo de configuração do modelo (`CONFIG_FILE`) está correto.
 
 ### 3. Avaliar Métricas do Modelo Treinado
 

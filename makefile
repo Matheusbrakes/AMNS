@@ -27,7 +27,6 @@ train:
 	docker run -it --rm \
         --shm-size=2g \
 		--gpus all \
-		-v $(CURDIR)/plantseg/plantseg:/app/data/plantseg115 \
 		-v $(OUTPUT_PATH):/app/output \
 		-v $(LOG_DIR):/app/logs \
 		-v $(LOG_DIR)/checkpoints:/app/checkpoints \
