@@ -1,22 +1,26 @@
-# Use uma imagem base oficial do Python 3.11 com Miniconda
-FROM continuumio/miniconda3:latest
+# Use uma imagem base NVIDIA com suporte a CUDA 11.8
+FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu20.04
 
-# Atualize pacotes do sistema e instale ferramentas necessárias
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+# Instale dependências do sistema
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    git \
     wget \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
-# Crie e ative um ambiente Conda específico para o projeto
-RUN conda create --name plantseg_env python=3.11 -y && \
-    echo "source activate plantseg_env" >> ~/.bashrc
+# Instale o Miniconda
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh && \
+    bash Miniconda3-latest-Linux-x86_64.sh -b -p /opt/miniconda && \
+    rm Miniconda3-latest-Linux-x86_64.sh
+ENV PATH="/opt/miniconda/bin:$PATH"
 
-# Instale PyTorch, torchvision e torchaudio compatíveis com CUDA 11.3
-RUN conda run -n plantseg_env conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch -y
+# Crie o ambiente Conda e instale Python 3.11
+RUN conda create --name plantseg_env python=3.11 -y
 
-# Instale o OpenMIM e o MMCV na versão necessária
+# Instale PyTorch, torchvision e torchaudio com CUDA
+RUN conda run -n plantseg_env conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia -y
+
+# Instale o OpenMIM e MMCV na versão necessária
 RUN conda run -n plantseg_env pip install -U openmim && \
     conda run -n plantseg_env mim install mmengine && \
     conda run -n plantseg_env mim install "mmcv==2.1.0"
