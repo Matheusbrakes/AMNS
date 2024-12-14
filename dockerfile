@@ -27,21 +27,16 @@ WORKDIR /app
 # Clone o repositório PlantSeg
 RUN git clone https://github.com/tqwei05/PlantSeg.git .
 
-# Declare o argumento para o caminho do dataset
-ARG DATASET_PATH
+# Copie o dataset local para o contêiner
+COPY plantsegv2 /app/data/temp_plantseg/
 
-# Copie o dataset do caminho configurável para o contêiner
-COPY ${DATASET_PATH} /plantseg
-
-# Ajuste a estrutura do dataset e renomeie para plantseg115
-RUN if [ -d "/plantseg/plantseg" ]; then \
-        mv /plantseg/plantseg/* /plantseg/ && \
-        rmdir /plantseg/plantseg; \
+# Ajuste a estrutura do dataset e renomeie para `plantseg115`
+RUN if [ -d "/app/data/temp_plantseg/plantsegv2" ]; then \
+        mkdir -p /app/data/plantsegv2 && \
+        mv /app/data/temp_plantseg/plantsegv2/* /app/data/plantsegv2/ && \
+        rmdir /app/data/temp_plantseg/plantsegv2; \
     fi && \
-    mv /plantseg /app/data/plantseg115
-
-# Configure o PYTHONPATH para incluir o diretório do projeto
-ENV PYTHONPATH="/app:${PYTHONPATH}"
+    mv /app/data/plantsegv2 /app/data/plantseg115
 
 # Copie o arquivo requirements.txt
 COPY requirements.txt .

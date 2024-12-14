@@ -25,7 +25,7 @@ cd AMNS
 Preencha os seguintes campos no `Makefile` antes de rodar os comandos:
 
 1. **`DATASET_PATH`:** 
-   - O caminho completo para o diretório onde está localizado o dataset para treinamento.
+   - O caminho para o diretório onde está localizado o dataset para treinamento.
    - Exemplo: `/home/user/data/`.
 
 2. **`OUTPUT_PATH`:** 
@@ -37,7 +37,7 @@ Preencha os seguintes campos no `Makefile` antes de rodar os comandos:
    - Exemplo: `/home/user/logs/`.
 
 4. **`CONFIG_FILE`:**
-   - O caminho do arquivo de configuração do modelo que você deseja treinar.
+   - O caminho do arquivo de configuração do modelo que você deseja usar para treinar.
    - Exemplo: `configs/segnext/segnext_mscan-t_1xb16-adamw-40k_plantseg115-512x512.py`.
 ---
 
