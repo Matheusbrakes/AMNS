@@ -134,6 +134,13 @@ A última etapa consistiu em validar os resultados obtidos com base nos benchmar
 
 ### [Slides apresentação](https://www.canva.com/design/DAGZNzUStv0/tCzXHqq_FzWE397iwql-zA/edit?utm_content=DAGZNzUStv0&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
+
+### Reparos no repositório PlantSeg
+
+Adicionamos um ajuste no código para investigar o que identificamos como possíveis referências a classes inexistentes durante o treinamento, o que estava resultando em falhas de execução. 
+- [Repositório com adaptação](https://github.com/LisandraMoura/PlantSeg_AMNS)
+PlantSeg/configs/segnext/segnext_mscan-t_1xb16-adamw-40k_plantseg115-512x512.py
+
 ### Referências 
 Wei, T., Chen, Z., Yu, X., Chapman, S., Melloy, P., & Huang, Z. (2024). PlantSeg: A Large-Scale In-the-wild Dataset for Plant Disease Segmentation. Disponível em: https://arxiv.org/abs/2409.04038.
 
