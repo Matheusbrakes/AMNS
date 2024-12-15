@@ -32,15 +32,15 @@ WORKDIR /app
 RUN git clone https://github.com/tqwei05/PlantSeg.git .
 
 # Copie o dataset local para o contêiner
-COPY plantsegv2 /app/data/temp_plantseg/
+COPY plantseg /app/data/temp_plantseg/
 
 # Ajuste a estrutura do dataset e renomeie para `plantseg115`
-RUN if [ -d "/app/data/temp_plantseg/plantsegv2" ]; then \
-        mkdir -p /app/data/plantsegv2 && \
-        mv /app/data/temp_plantseg/plantsegv2/* /app/data/plantsegv2/ && \
-        rmdir /app/data/temp_plantseg/plantsegv2; \
+RUN if [ -d "/app/data/temp_plantseg/plantseg" ]; then \
+        mkdir -p /app/data/plantseg && \
+        mv /app/data/temp_plantseg/plantseg/* /app/data/plantseg/ && \
+        rmdir /app/data/temp_plantseg/plantseg; \
     fi && \
-    mv /app/data/plantsegv2 /app/data/plantseg115
+    mv /app/data/plantseg /app/data/plantseg115
 
 # Copie o arquivo requirements.txt
 COPY requirements.txt .
