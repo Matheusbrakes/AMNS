@@ -5,6 +5,7 @@ AMNS/
 plantseg/
 
 plantsegv2/
+dataset/
 
 
 # Ignorar todos os arquivos com extensão .zip
