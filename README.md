@@ -152,7 +152,7 @@ Adicionamos um ajuste no código para investigar o que identificamos como possí
 - [Repositório com adaptação](https://github.com/LisandraMoura/PlantSeg_AMNS)
 PlantSeg/configs/segnext/segnext_mscan-t_1xb16-adamw-40k_plantseg115-512x512.py
 
-### Referências 
+# Referências 
 Wei, T., Chen, Z., Yu, X., Chapman, S., Melloy, P., & Huang, Z. (2024). PlantSeg: A Large-Scale In-the-wild Dataset for Plant Disease Segmentation. Disponível em: https://arxiv.org/abs/2409.04038.
 
 GitHub - CycleGAN and Pix2Pix: O código e a implementação utilizados para a geração de imagens estilizadas foram baseados no repositório oficial do CycleGAN, disponível em: https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix/tree/master/datasets.
