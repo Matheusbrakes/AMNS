@@ -138,12 +138,12 @@ A última etapa consistiu em validar os resultados obtidos com base nos benchmar
 Data Model SegNext   | Encoder | mIoU | mAcc 
 ---                  | ---  | ---   | ---                  
 Original Data   | MSCAN-L |  0.8000  |  2.9600 |  
-+1000 Imagens | MSCAN-L |  44.52  |  59.95 |  
++1000 Imagens | MSCAN-L |  ---  |  --- |  
 +1500 Imagens	| MSCAN-L |  2.0000  |  6.3300 |  
 +2000 Imagens | MSCAN-L |  2.3000  |  5.9600 |  
 
 
-### [Slides apresentação](https://www.canva.com/design/DAGZNzUStv0/tCzXHqq_FzWE397iwql-zA/edit?utm_content=DAGZNzUStv0&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
+## [Slides apresentação](https://www.canva.com/design/DAGZNzUStv0/tCzXHqq_FzWE397iwql-zA/edit?utm_content=DAGZNzUStv0&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
 
 ### Reparos no repositório PlantSeg
