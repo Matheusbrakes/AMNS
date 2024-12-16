@@ -15,6 +15,13 @@ Este repositório configura um ambiente completo para o treinamento de modelos d
 
 O projeto amplia o dataset PlantSeg utilizando o CycleGAN para gerar imagens sintéticas que simulam condições reais de campo. Essas imagens enriquecem a diversidade do dataset, permitindo treinar modelos robustos, como o SegNeXt, para segmentação de doenças em plantas. A abordagem incremental avalia o impacto da expansão no desempenho do modelo, utilizando métricas como MIoU e mAcc. O objetivo é aprimorar a precisão e a generalização de modelos aplicados à agricultura de precisão, reduzindo perdas causadas por doenças e contribuindo para a produtividade agrícola.
 
+**Imagem original (547x481)**
+
+![Exemplos de imagem gerada](img/cabbage_black_rot_Bing_0076.jpg)
+
+
+**Imagem sintética (256x256)**
+
 ![Exemplos de imagem gerada](img/cabbage_black_rot_Bing_0076_fake.png)
 
 # Dataset 
@@ -149,8 +156,13 @@ Original Data   | MSCAN-L |  0.8000  |  2.9600 |
 ### Reparos no repositório PlantSeg
 
 Adicionamos um ajuste no código para investigar o que identificamos como possíveis referências a classes inexistentes durante o treinamento, o que estava resultando em falhas de execução. 
+
 - [Repositório com adaptação](https://github.com/LisandraMoura/PlantSeg_AMNS)
-PlantSeg/configs/segnext/segnext_mscan-t_1xb16-adamw-40k_plantseg115-512x512.py
+
+#### Arquivos reparados:
+
+- PlantSeg/configs/base/datasets/plantseg115.py
+- PlantSeg/configs/segnext/segnext_mscan-t_1xb16-adamw-40k_plantseg115-512x512.py
 
 # Referências 
 Wei, T., Chen, Z., Yu, X., Chapman, S., Melloy, P., & Huang, Z. (2024). PlantSeg: A Large-Scale In-the-wild Dataset for Plant Disease Segmentation. Disponível em: https://arxiv.org/abs/2409.04038.
