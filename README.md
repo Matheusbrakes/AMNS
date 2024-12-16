@@ -110,7 +110,11 @@ O desenvolvimento deste trabalho foi organizado em quatro etapas principais: ger
 
 - **Geração de Imagens Sintéticas**
 
-Para aumentar a diversidade do dataset PlantSeg, utilizamos o CycleGAN como ferramenta para criar imagens estilizadas, simulando variações ambientais comuns no campo. As condições reproduzidas incluem baixa luminosidade, brilho elevado e entardecer, refletindo os desafios encontrados em cenários reais. Esse processo gerou incrementalmente conjuntos de 500, 1.000, 1.500 e 2.000 imagens adicionais, que foram integradas ao dataset original. O objetivo dessa etapa foi introduzir maior variabilidade nas condições visuais, aumentando a capacidade de generalização do modelo treinado.
+Para aumentar a diversidade do dataset PlantSeg, utilizamos o CycleGAN como ferramenta para criar imagens estilizadas, simulando variações ambientais comuns no campo. As condições reproduzidas incluem baixa luminosidade, brilho elevado e entardecer, refletindo os desafios encontrados em cenários reais. Esse processo gerou incrementalmente conjuntos de 500, 1.000, 1.500 e 2.000 imagens adicionais, que foram integradas ao dataset original.
+
+Optamos pelo CycleGAN devido à sua eficiência em gerar imagens estilizadas sem a necessidade de pares correspondentes, algo inviável no nosso contexto pela ausência de imagens pareadas com variações ambientais. Diferente de técnicas tradicionais de data augmentation (como rotação, escala ou corte), o CycleGAN preserva as características estruturais originais da imagem, modificando apenas o estilo visual de forma realista. Isso garante que as novas imagens geradas adicionem variabilidade relevante ao dataset, sem comprometer a integridade dos dados.
+
+Além disso, a capacidade do CycleGAN de transformar imagens entre domínios torna-o mais adequado para reproduzir condições ambientais adversas encontradas no campo, como iluminação irregular e mudanças de saturação. Essa abordagem contribui para o aumento da capacidade de generalização do modelo treinado, tornando-o mais robusto em cenários reais.
 
 - **Treinamento Incremental com SegNeXt**
 
@@ -129,7 +133,14 @@ Essas métricas foram utilizadas para comparar os resultados de cada conjunto in
 
 A última etapa consistiu em validar os resultados obtidos com base nos benchmarks fornecidos pelo artigo "A Large-Scale In-the-wild Dataset for Plant Disease Segmentation" e nos dados apresentados no slide. Essa análise permitiu verificar se o uso das imagens estilizadas geradas pelo CycleGAN realmente contribuiu para melhorar a precisão e a robustez do modelo SegNeXt em relação ao baseline original.
 
-### Resultados
+## Resultados Baseline
+
+Data Model SegNext   | Encoder | mIoU | mAcc 
+---                  | ---  | ---   | ---                  
+Original Data   | MSCAN-L |  0.8000  |  2.9600 |  
++1000 Imagens | MSCAN-L |  44.52  |  59.95 |  
++1500 Imagens	| MSCAN-L |  2.0000  |  6.3300 |  
++2000 Imagens | MSCAN-L |  2.3000  |  5.9600 |  
 
 
 ### [Slides apresentação](https://www.canva.com/design/DAGZNzUStv0/tCzXHqq_FzWE397iwql-zA/edit?utm_content=DAGZNzUStv0&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
